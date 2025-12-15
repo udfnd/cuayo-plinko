@@ -1,7 +1,7 @@
 'use client';
 
 import type { DropResult, Risk, Rows } from '@/types';
-import { getAllSlotProbabilities, calculateExpectedValue, formatProbability } from '@/lib/probability';
+import { getAllSlotProbabilities, calculateExpectedValue, formatProbability } from '@/lib/plinko/probability';
 
 interface ResultsPanelProps {
   lastResult: DropResult | null;

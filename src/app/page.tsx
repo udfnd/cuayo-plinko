@@ -1,128 +1,34 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
-import type { GameSettings, DropResult, Ball } from '@/types';
-import { generatePath, pathToSlotIndex } from '@/lib/prng';
-import { getMultiplier } from '@/lib/multipliers';
-import PlinkoBoard from '@/components/PlinkoBoard';
-import SettingsPanel from '@/components/SettingsPanel';
-import ResultsPanel from '@/components/ResultsPanel';
+import Link from 'next/link';
 
 export default function Home() {
-  const [settings, setSettings] = useState<GameSettings>({
-    bet: 1.00,
-    rows: 12,
-    risk: 'medium',
-    seed: 'demo-seed-123',
-  });
-
-  const [balls, setBalls] = useState<Ball[]>([]);
-  const [history, setHistory] = useState<DropResult[]>([]);
-  const [lastResult, setLastResult] = useState<DropResult | null>(null);
-  const [totalProfit, setTotalProfit] = useState(0);
-  const [isAutoRunning, setIsAutoRunning] = useState(false);
-
-  const dropCountRef = useRef(0);
-  const autoIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  const dropBall = useCallback(() => {
-    const dropIndex = dropCountRef.current++;
-    const path = generatePath(settings.seed, settings.rows, dropIndex);
-    const slotIndex = pathToSlotIndex(path);
-    const multiplier = getMultiplier(settings.rows, settings.risk, slotIndex);
-
-    const ball: Ball = {
-      id: `ball-${Date.now()}-${dropIndex}`,
-      x: 0,
-      y: 0,
-      path,
-      currentRow: -1,
-      progress: 0,
-      done: false,
-      slotIndex,
-      multiplier,
-    };
-
-    setBalls(prev => [...prev, ball]);
-  }, [settings]);
-
-  const handleBallComplete = useCallback((ball: Ball) => {
-    const payout = settings.bet * ball.multiplier;
-    const profit = payout - settings.bet;
-
-    const result: DropResult = {
-      id: ball.id,
-      path: ball.path,
-      slotIndex: ball.slotIndex,
-      multiplier: ball.multiplier,
-      payout,
-      timestamp: Date.now(),
-    };
-
-    setLastResult(result);
-    setHistory(prev => [...prev, result].slice(-100)); // 최대 100개 보관
-    setTotalProfit(prev => prev + profit);
-  }, [settings.bet]);
-
-  const handleAuto = useCallback((count: number) => {
-    setIsAutoRunning(true);
-    let remaining = count;
-
-    autoIntervalRef.current = setInterval(() => {
-      if (remaining <= 0) {
-        if (autoIntervalRef.current) {
-          clearInterval(autoIntervalRef.current);
-          autoIntervalRef.current = null;
-        }
-        setIsAutoRunning(false);
-        return;
-      }
-
-      dropBall();
-      remaining--;
-    }, 500);
-  }, [dropBall]);
-
-  const handleStopAuto = useCallback(() => {
-    if (autoIntervalRef.current) {
-      clearInterval(autoIntervalRef.current);
-      autoIntervalRef.current = null;
-    }
-    setIsAutoRunning(false);
-  }, []);
-
-  const handleSettingsChange = useCallback((newSettings: GameSettings) => {
-    if (newSettings.rows !== settings.rows || newSettings.seed !== settings.seed) {
-      dropCountRef.current = 0;
-    }
-    setSettings(newSettings);
-  }, [settings.rows, settings.seed]);
-
   return (
     <main style={{
       minHeight: '100vh',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
+      justifyContent: 'center',
       padding: '20px',
     }}>
       <header style={{
         textAlign: 'center',
-        marginBottom: '20px',
+        marginBottom: '40px',
       }}>
         <h1 style={{
-          fontSize: '28px',
+          fontSize: '42px',
           fontWeight: 'bold',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          background: 'linear-gradient(135deg, #667eea 0%, #f5576c 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
-          marginBottom: '8px',
+          marginBottom: '12px',
         }}>
-          Plinko (Cuayo Version)
+          Cuayo Demo
         </h1>
         <p style={{
-          color: '#666',
-          fontSize: '14px',
+          color: '#888',
+          fontSize: '16px',
         }}>
           Educational demo only - Not a gambling service
         </p>
@@ -130,51 +36,90 @@ export default function Home() {
 
       <div style={{
         display: 'flex',
-        gap: '20px',
+        gap: '24px',
         flexWrap: 'wrap',
         justifyContent: 'center',
-        alignItems: 'flex-start',
       }}>
-        {/* Settings Panel */}
-        <SettingsPanel
-          settings={settings}
-          onSettingsChange={handleSettingsChange}
-          onDrop={dropBall}
-          onAuto={handleAuto}
-          isAutoRunning={isAutoRunning}
-          onStopAuto={handleStopAuto}
-        />
+        {/* Plinko Card */}
+        <Link href="/plinko" style={{ textDecoration: 'none' }}>
+          <div style={{
+            width: '280px',
+            padding: '32px',
+            borderRadius: '16px',
+            background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%)',
+            border: '1px solid rgba(102, 126, 234, 0.3)',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            textAlign: 'center',
+          }}>
+            <div style={{
+              fontSize: '48px',
+              marginBottom: '16px',
+            }}>
+              🎯
+            </div>
+            <h2 style={{
+              fontSize: '24px',
+              fontWeight: 'bold',
+              color: '#667eea',
+              marginBottom: '8px',
+            }}>
+              Plinko
+            </h2>
+            <p style={{
+              color: '#888',
+              fontSize: '14px',
+              lineHeight: '1.5',
+            }}>
+              Drop balls through pegs and watch them bounce into multiplier slots
+            </p>
+          </div>
+        </Link>
 
-        <PlinkoBoard
-          rows={settings.rows}
-          risk={settings.risk}
-          balls={balls}
-          seed={settings.seed}
-          onBallComplete={handleBallComplete}
-        />
-
-        <ResultsPanel
-          lastResult={lastResult}
-          history={history}
-          rows={settings.rows}
-          risk={settings.risk}
-          totalProfit={totalProfit}
-        />
+        {/* Crash Card */}
+        <Link href="/crash" style={{ textDecoration: 'none' }}>
+          <div style={{
+            width: '280px',
+            padding: '32px',
+            borderRadius: '16px',
+            background: 'linear-gradient(135deg, rgba(240, 147, 251, 0.15) 0%, rgba(245, 87, 108, 0.15) 100%)',
+            border: '1px solid rgba(245, 87, 108, 0.3)',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            textAlign: 'center',
+          }}>
+            <div style={{
+              fontSize: '48px',
+              marginBottom: '16px',
+            }}>
+              📈
+            </div>
+            <h2 style={{
+              fontSize: '24px',
+              fontWeight: 'bold',
+              color: '#f5576c',
+              marginBottom: '8px',
+            }}>
+              Crash
+            </h2>
+            <p style={{
+              color: '#888',
+              fontSize: '14px',
+              lineHeight: '1.5',
+            }}>
+              Cash out before the multiplier crashes for big wins
+            </p>
+          </div>
+        </Link>
       </div>
 
       <footer style={{
-        marginTop: '30px',
+        marginTop: '60px',
         textAlign: 'center',
         color: '#555',
         fontSize: '12px',
       }}>
-        <p>Seed: <code style={{ color: '#888', fontFamily: 'monospace' }}>{settings.seed}</code></p>
-        <p style={{ marginTop: '4px' }}>
-          Drop #{dropCountRef.current} | Rows: {settings.rows} | Risk: {settings.risk}
-        </p>
-        <p style={{ marginTop: '8px', color: '#444' }}>
-          Custom multiplier tables - Not copied from any gambling service
-        </p>
+        <p>Custom implementation - Not copied from any gambling service</p>
       </footer>
     </main>
   );

@@ -6,7 +6,7 @@
  * - 핀과의 충돌 시 시드 기반 미세 변동으로 결과 결정
  */
 
-import { SeededRandom } from './prng';
+import { SeededRandom } from '@/lib/prng';
 
 // 물리 상수
 export const PHYSICS = {

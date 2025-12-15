@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useCallback, useState } from 'react';
 import type { Ball, Rows, Risk } from '@/types';
-import { getMultipliers, getMultiplier } from '@/lib/multipliers';
+import { getMultipliers, getMultiplier } from '@/lib/plinko/multipliers';
 import {
   PhysicsBall,
   Peg,
@@ -11,7 +11,7 @@ import {
   updatePhysics,
   createPhysicsBall,
   createBallRng,
-} from '@/lib/physics';
+} from '@/lib/plinko/physics';
 import { SeededRandom } from '@/lib/prng';
 
 interface PlinkoBoardProps {
