@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm create:*)",
+      "mcp__jetbrains__list_directory_tree",
+      "Bash(pnpm install:*)",
+      "Bash(curl:*)",
+      "Bash(pkill:*)",
+      "Bash(pnpm build:*)"
+    ]
+  }
+}
