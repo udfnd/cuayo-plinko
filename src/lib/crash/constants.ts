@@ -21,7 +21,7 @@ export const TIMING = {
 export const MULTIPLIER = {
   START: 1.00,               // 시작 배수
   UPDATE_INTERVAL: 50,       // 업데이트 간격 (ms)
-  GROWTH_RATE: 0.00006,      // 성장률 (exp 기반)
+  INCREMENT_INTERVAL: 50,    // 0.01 증가 간격 (ms) - 80ms마다 0.01 증가
 } as const;
 
 // 해시 체인 길이

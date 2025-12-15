@@ -11,7 +11,6 @@ import {
   MULTIPLIER,
   createHashChain,
   getNextGameHash,
-  getCurrentGameHash,
   calculateCrashPoint,
   createInitialState,
   placeBet,
@@ -30,119 +29,210 @@ export default function CrashPage() {
   const [gameState, setGameState] = useState<CrashGameState | null>(null);
   const [showVerify, setShowVerify] = useState(false);
   const [lastCrashPoint, setLastCrashPoint] = useState<number | null>(null);
+  const [multiplierHistory, setMultiplierHistory] = useState<number[]>([]);
 
-  const animationRef = useRef<number>(0);
-  const startTimeRef = useRef<number>(0);
   const bettingTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const multiplierTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const hashChainRef = useRef<HashChain | null>(null);
+  const isRunningRef = useRef<boolean>(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const crashPointRef = useRef<number>(1.00);
+  const gameHashRef = useRef<string>('');
+  const startBettingTimerRef = useRef<() => void>(() => {});
 
-  // 게임 초기화
-  useEffect(() => {
-    const chain = createHashChain();
-    setHashChain(chain);
-    setGameState(createInitialState(chain.commitHash));
+  // 사운드 시작
+  const startSound = useCallback(() => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio('/soundeffect.mp3');
+      audioRef.current.loop = true;
+      audioRef.current.volume = 0.5;
+    }
+    audioRef.current.currentTime = 0;
+    audioRef.current.play().catch(() => {
+      // 자동 재생 차단 시 무시
+    });
   }, []);
 
-  // 배수 계산 함수 (시간 기반 지수 성장)
-  const calculateMultiplier = useCallback((elapsedMs: number): number => {
-    // exponential growth: 1.00 * e^(rate * time)
-    const multiplier = Math.exp(MULTIPLIER.GROWTH_RATE * elapsedMs);
-    return Math.floor(multiplier * 100) / 100;
+  // 사운드 정지
+  const stopSound = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
   }, []);
 
-  // 베팅 타이머 시작
-  const startBettingPhase = useCallback(() => {
-    if (!gameState || !hashChain) return;
+  // 배수 타이머 정지
+  const stopMultiplierTimer = useCallback(() => {
+    if (multiplierTimerRef.current) {
+      clearInterval(multiplierTimerRef.current);
+      multiplierTimerRef.current = null;
+    }
+    stopSound();
+  }, [stopSound]);
+
+  // 러닝 페이즈 시작
+  const startRunningPhase = useCallback(async () => {
+    const chain = hashChainRef.current;
+    if (!chain || isRunningRef.current) return;
+
+    isRunningRef.current = true;
+
+    const gameHash = getNextGameHash(chain);
+    if (!gameHash) {
+      console.error('Hash chain exhausted');
+      isRunningRef.current = false;
+      return;
+    }
+
+    const crashPoint = await calculateCrashPoint(gameHash);
+    crashPointRef.current = crashPoint;
+    gameHashRef.current = gameHash;
+
+    // 게임 상태 초기화
+    setGameState(prev => {
+      if (!prev) return prev;
+      return startRound(prev, gameHash, crashPoint);
+    });
+
+    // 히스토리 초기화
+    setMultiplierHistory([1.00]);
+
+    // 사운드 시작
+    startSound();
+
+    // 현재 배수 (로컬 변수로 관리)
+    let currentMultiplier = 1.00;
+
+    // 크래시 사운드 재생 함수
+    const playCrashSound = () => {
+      const crashAudio = new Audio('/end.mp3');
+      crashAudio.volume = 0.7;
+      crashAudio.play().catch(() => {});
+    };
+
+    // setInterval로 정확히 INCREMENT_INTERVAL마다 증가
+    multiplierTimerRef.current = setInterval(() => {
+      // 2.00x 이상일 경우 지수적으로 증가량 증가
+      let increment = 0.01;
+      if (currentMultiplier >= 2.00) {
+        // 지수적 증가: 2.00x 이후 증가량이 점점 커짐
+        // 예: 2.00x에서 0.01, 3.00x에서 0.02, 5.00x에서 0.04 ...
+        increment = 0.01 * Math.pow(1.5, (currentMultiplier - 2) / 2);
+        increment = Math.min(increment, 0.5); // 최대 0.5 제한
+      }
+
+      currentMultiplier = Math.round((currentMultiplier + increment) * 100) / 100;
+
+      // 크래시 체크
+      if (currentMultiplier >= crashPointRef.current) {
+        // 타이머 정지
+        stopMultiplierTimer();
+        isRunningRef.current = false;
+
+        // 크래시 사운드 재생
+        playCrashSound();
+
+        setLastCrashPoint(crashPointRef.current);
+
+        // 상태 업데이트 (크래시)
+        setGameState(prev => {
+          if (!prev) return prev;
+          return crashRound(updateMultiplier(prev, crashPointRef.current));
+        });
+
+        // 히스토리에 최종 값 추가
+        setMultiplierHistory(prev => [...prev, crashPointRef.current]);
+
+        // 다음 라운드 준비
+        setTimeout(() => {
+          setGameState(current => {
+            if (!current) return current;
+            return prepareNextRound(current, TIMING.BETTING_DURATION);
+          });
+          startBettingTimerRef.current();
+        }, TIMING.CRASHED_DURATION);
+
+        return;
+      }
+
+      // 상태 업데이트
+      setGameState(prev => {
+        if (!prev || prev.phase !== 'RUNNING') {
+          stopMultiplierTimer();
+          isRunningRef.current = false;
+          return prev;
+        }
+        return updateMultiplier(prev, currentMultiplier);
+      });
+
+      // 히스토리 업데이트
+      setMultiplierHistory(prev => [...prev, currentMultiplier]);
+
+    }, MULTIPLIER.INCREMENT_INTERVAL);
+
+  }, [startSound, stopMultiplierTimer]);
+
+  // 베팅 타이머 시작 함수
+  const startBettingTimer = useCallback(() => {
+    // 이미 타이머가 있으면 정리
+    if (bettingTimerRef.current) {
+      clearInterval(bettingTimerRef.current);
+      bettingTimerRef.current = null;
+    }
 
     let timeLeft = TIMING.BETTING_DURATION;
 
+    // 초기 시간 설정
+    setGameState(prev => prev ? { ...prev, bettingTimeLeft: timeLeft } : prev);
+
     bettingTimerRef.current = setInterval(() => {
       timeLeft -= 100;
-      setGameState(prev => prev ? { ...prev, bettingTimeLeft: Math.max(0, timeLeft) } : prev);
 
       if (timeLeft <= 0) {
         if (bettingTimerRef.current) {
           clearInterval(bettingTimerRef.current);
           bettingTimerRef.current = null;
         }
+        setGameState(prev => prev ? { ...prev, bettingTimeLeft: 0 } : prev);
         startRunningPhase();
+      } else {
+        setGameState(prev => prev ? { ...prev, bettingTimeLeft: timeLeft } : prev);
       }
     }, 100);
-  }, [gameState, hashChain]);
+  }, [startRunningPhase]);
 
-  // 러닝 페이즈 시작
-  const startRunningPhase = useCallback(async () => {
-    if (!hashChain) return;
+  // startBettingTimer를 ref에 할당 (순환 참조 해결)
+  useEffect(() => {
+    startBettingTimerRef.current = startBettingTimer;
+  }, [startBettingTimer]);
 
-    const gameHash = getNextGameHash(hashChain);
-    if (!gameHash) {
-      console.error('Hash chain exhausted');
-      return;
-    }
-
-    const crashPoint = await calculateCrashPoint(gameHash);
-
-    setGameState(prev => {
-      if (!prev) return prev;
-      return startRound(prev, gameHash, crashPoint);
-    });
-
-    startTimeRef.current = performance.now();
-
-    const animate = () => {
-      const elapsed = performance.now() - startTimeRef.current;
-      const currentMultiplier = calculateMultiplier(elapsed);
-
-      setGameState(prev => {
-        if (!prev || prev.phase !== 'RUNNING') return prev;
-
-        // 크래시 체크
-        if (currentMultiplier >= prev.crashPoint) {
-          // 크래시!
-          setLastCrashPoint(prev.crashPoint);
-          const crashed = crashRound(prev);
-
-          // 잠시 후 다음 라운드
-          setTimeout(() => {
-            setGameState(current => {
-              if (!current) return current;
-              return prepareNextRound(current, TIMING.BETTING_DURATION);
-            });
-            startBettingPhase();
-          }, TIMING.CRASHED_DURATION);
-
-          return crashed;
-        }
-
-        return updateMultiplier(prev, currentMultiplier);
-      });
-
-      // 계속 애니메이션
-      setGameState(prev => {
-        if (prev?.phase === 'RUNNING') {
-          animationRef.current = requestAnimationFrame(animate);
-        }
-        return prev;
-      });
-    };
-
-    animationRef.current = requestAnimationFrame(animate);
-  }, [hashChain, calculateMultiplier, startBettingPhase]);
+  // 게임 초기화
+  useEffect(() => {
+    const chain = createHashChain();
+    hashChainRef.current = chain;
+    setHashChain(chain);
+    setGameState(createInitialState(chain.commitHash));
+  }, []);
 
   // 첫 베팅 페이즈 시작
   useEffect(() => {
-    if (gameState?.phase === 'BETTING' && gameState.roundNumber === 1) {
-      startBettingPhase();
+    if (gameState?.phase === 'BETTING' && gameState.roundNumber === 1 && !bettingTimerRef.current) {
+      startBettingTimer();
     }
-  }, [gameState?.phase, gameState?.roundNumber, startBettingPhase]);
+  }, [gameState?.phase, gameState?.roundNumber, startBettingTimer]);
 
   // 클린업
   useEffect(() => {
     return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
       if (bettingTimerRef.current) {
         clearInterval(bettingTimerRef.current);
+      }
+      if (multiplierTimerRef.current) {
+        clearInterval(multiplierTimerRef.current);
+      }
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
       }
     };
   }, []);
@@ -221,14 +311,13 @@ export default function CrashPage() {
           onCancelBet={handleCancelBet}
           onCashOut={handleCashOut}
         />
-
         <CrashDisplay
           phase={gameState.phase}
           multiplier={gameState.currentMultiplier}
           crashPoint={gameState.crashPoint}
           bettingTimeLeft={gameState.bettingTimeLeft}
+          multiplierHistory={multiplierHistory}
         />
-
         <CrashHistory
           history={gameState.history}
           totalProfit={gameState.totalProfit}
