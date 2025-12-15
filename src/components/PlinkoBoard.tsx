@@ -26,7 +26,7 @@ interface PlinkoBoardProps {
 const CANVAS_WIDTH = 600;
 const CANVAS_HEIGHT = 700;
 const SLOT_HEIGHT = 40;
-const BALL_IMAGE_SIZE = 28; // 이미지 크기
+const BALL_IMAGE_SIZE = 20; // 이미지 크기
 
 // 색상
 const COLORS = {
@@ -427,11 +427,14 @@ export default function PlinkoBoard({ rows, risk, balls, seed, onBallComplete }:
 
       // 새 물리 공 생성
       const layout = getLayout();
-      const startX = CANVAS_WIDTH / 2;
+      const rng = createBallRng(seed, ball.id);
+
+      // 시드 기반으로 초기 위치를 좌우 2px 오프셋 (핀에 걸리지 않도록)
+      const xOffset = (rng.next() - 0.5) * 4; // -2 ~ +2px
+      const startX = CANVAS_WIDTH / 2 + xOffset;
       const startY = layout.topPadding - 30;
 
       const physicsBall = createPhysicsBall(ball.id, startX, startY, { x: 0, y: 2 });
-      const rng = createBallRng(seed, ball.id);
 
       physicsBallsRef.current.set(ball.id, {
         ball: physicsBall,

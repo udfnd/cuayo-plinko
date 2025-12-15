@@ -10,12 +10,12 @@ import { SeededRandom } from './prng';
 
 // 물리 상수
 export const PHYSICS = {
-  GRAVITY: 0.35,          // 중력 가속도
-  RESTITUTION: 0.5,      // 반발 계수 (0~1) - 증가시켜서 더 많이 튕김
-  FRICTION: 0.995,        // 마찰/감쇠 계수
-  BALL_RADIUS: 10,        // 공 반지름
-  PEG_RADIUS: 6,          // 핀 반지름
-  COLLISION_BIAS: 0.2,    // 충돌 시 시드 기반 방향 편향 강도
+  GRAVITY: 0.4,           // 중력 가속도 (높을수록 빨리 떨어짐)
+  RESTITUTION: 0.35,       // 반발 계수 (0~1)
+  FRICTION: 0.99,         // 마찰/감쇠 계수
+  BALL_RADIUS: 10,        // 공 반지름 (핀보다 충분히 커야 걸리지 않음)
+  PEG_RADIUS: 4,          // 핀 반지름 (작을수록 걸릴 확률 감소)
+  COLLISION_BIAS: 0.05,   // 충돌 시 시드 기반 방향 편향 강도 (낮을수록 가운데로 모임)
   MIN_VELOCITY: 0.1,      // 최소 속도 (이하면 정지)
   MAX_VELOCITY: 18,       // 최대 속도 제한
 } as const;
@@ -36,6 +36,8 @@ export interface PhysicsBall {
   settled: boolean;      // 슬롯에 안착했는지
   slotIndex: number;     // 최종 슬롯
   collisionCount: number; // 충돌 횟수 (시드 오프셋용)
+  stuckFrames: number;   // 정체 프레임 카운터
+  lastY: number;         // 이전 Y 위치 (정체 감지용)
 }
 
 // 핀 정보
@@ -212,6 +214,24 @@ export function updatePhysics(
     ball.velocity.x = 0;
   }
 
+  // 8. 정체 감지 및 탈출 처리
+  const yMovement = Math.abs(ball.position.y - ball.lastY);
+  if (yMovement < 0.5 && ball.position.y < bounds.bottom - 50) {
+    // 거의 움직이지 않음 - 정체 카운터 증가
+    ball.stuckFrames++;
+
+    if (ball.stuckFrames > 30) {
+      // 30프레임 이상 정체 시 옆으로 밀어냄
+      const pushDirection = rng.next() > 0.5 ? 1 : -1;
+      ball.velocity.x += pushDirection * 3;
+      ball.velocity.y += 2;
+      ball.stuckFrames = 0;
+    }
+  } else {
+    ball.stuckFrames = 0;
+  }
+  ball.lastY = ball.position.y;
+
   return hasCollision;
 }
 
@@ -233,6 +253,8 @@ export function createPhysicsBall(
     settled: false,
     slotIndex: -1,
     collisionCount: 0,
+    stuckFrames: 0,
+    lastY: startY,
   };
 }
 

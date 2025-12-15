@@ -80,7 +80,7 @@ export default function Home() {
 
       dropBall();
       remaining--;
-    }, 200); // 200ms 간격으로 드롭
+    }, 500);
   }, [dropBall]);
 
   const handleStopAuto = useCallback(() => {
@@ -92,7 +92,6 @@ export default function Home() {
   }, []);
 
   const handleSettingsChange = useCallback((newSettings: GameSettings) => {
-    // rows가 변경되면 drop count 리셋
     if (newSettings.rows !== settings.rows || newSettings.seed !== settings.seed) {
       dropCountRef.current = 0;
     }
@@ -107,7 +106,6 @@ export default function Home() {
       alignItems: 'center',
       padding: '20px',
     }}>
-      {/* Header */}
       <header style={{
         textAlign: 'center',
         marginBottom: '20px',
@@ -120,7 +118,7 @@ export default function Home() {
           WebkitTextFillColor: 'transparent',
           marginBottom: '8px',
         }}>
-          Plinko Demo
+          Plinko (Cuayo Version)
         </h1>
         <p style={{
           color: '#666',
@@ -130,7 +128,6 @@ export default function Home() {
         </p>
       </header>
 
-      {/* Game Area */}
       <div style={{
         display: 'flex',
         gap: '20px',
@@ -148,7 +145,6 @@ export default function Home() {
           onStopAuto={handleStopAuto}
         />
 
-        {/* Plinko Board */}
         <PlinkoBoard
           rows={settings.rows}
           risk={settings.risk}
@@ -157,7 +153,6 @@ export default function Home() {
           onBallComplete={handleBallComplete}
         />
 
-        {/* Results Panel */}
         <ResultsPanel
           lastResult={lastResult}
           history={history}
@@ -167,7 +162,6 @@ export default function Home() {
         />
       </div>
 
-      {/* Footer */}
       <footer style={{
         marginTop: '30px',
         textAlign: 'center',
