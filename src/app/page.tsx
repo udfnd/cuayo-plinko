@@ -111,6 +111,42 @@ export default function Home() {
             </p>
           </div>
         </Link>
+
+        {/* Hold'em Exchange Card */}
+        <Link href="/holdem" style={{ textDecoration: 'none' }}>
+          <div style={{
+            width: '280px',
+            padding: '32px',
+            borderRadius: '16px',
+            background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.15) 100%)',
+            border: '1px solid rgba(16, 185, 129, 0.3)',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            textAlign: 'center',
+          }}>
+            <div style={{
+              fontSize: '48px',
+              marginBottom: '16px',
+            }}>
+              🃏
+            </div>
+            <h2 style={{
+              fontSize: '24px',
+              fontWeight: 'bold',
+              color: '#10b981',
+              marginBottom: '8px',
+            }}>
+              Hold&apos;em Exchange
+            </h2>
+            <p style={{
+              color: '#888',
+              fontSize: '14px',
+              lineHeight: '1.5',
+            }}>
+              Bet on 4 hands competing on the same board
+            </p>
+          </div>
+        </Link>
       </div>
 
       <footer style={{

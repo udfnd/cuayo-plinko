@@ -1,8 +1,8 @@
-# CLAUDE.md - Plinko Demo Project
+# CLAUDE.md - Cuayo Demo Project
 
 ## 프로젝트 개요
-교육/데모 목적의 Plinko 게임 웹앱. **실제 도박 서비스가 아님**.
-Stake Plinko에서 영감만 받았으며, 브랜딩/에셋/정확한 배수표는 복제하지 않음.
+교육/데모 목적의 게임 웹앱 모음. **실제 도박 서비스가 아님**.
+각 게임은 영감만 받았으며, 브랜딩/에셋/정확한 수치는 복제하지 않음.
 
 ## 기술 스택
 - Next.js 16 + React 19 + TypeScript
@@ -20,16 +20,32 @@ pnpm build   # 프로덕션 빌드
 ```
 src/
 ├── app/              # Next.js App Router
-│   ├── page.tsx      # 메인 페이지
-│   └── layout.tsx    # 레이아웃
+│   ├── page.tsx      # 메인 페이지 (게임 선택)
+│   ├── layout.tsx    # 레이아웃
+│   ├── plinko/       # Plinko 게임
+│   ├── crash/        # Crash 게임
+│   └── holdem/       # Hold'em Exchange 게임
 ├── components/       # React 컴포넌트
+│   ├── GameTabs.tsx  # 게임 전환 탭
 │   ├── PlinkoBoard.tsx
 │   ├── SettingsPanel.tsx
-│   └── ResultsPanel.tsx
+│   ├── ResultsPanel.tsx
+│   └── holdem/       # Hold'em 컴포넌트
+│       ├── BoardDisplay.tsx
+│       ├── BettingPanel.tsx
+│       ├── CardDisplay.tsx
+│       ├── GameControls.tsx
+│       └── HandDisplay.tsx
 ├── lib/              # 유틸리티/로직
 │   ├── prng.ts       # 시드 기반 PRNG
 │   ├── multipliers.ts # 배수표
-│   └── probability.ts # 확률/EV 계산
+│   ├── probability.ts # 확률/EV 계산
+│   └── holdem/       # Hold'em 로직
+│       ├── cards.ts      # 카드 정의
+│       ├── deck.ts       # 덱/셔플
+│       ├── evaluator.ts  # 족보 평가
+│       ├── equity.ts     # Monte Carlo 승률
+│       └── gameState.ts  # 게임 상태
 └── types/            # TypeScript 타입
 ```
 
@@ -42,3 +58,14 @@ src/
 ## 중요 규칙
 **배수표(multipliers)는 Stake와 동일하게 복제 금지.**
 이 프로젝트의 배수표는 독자적으로 설계된 값임.
+
+## 게임별 문서
+- Plinko: 기본 README 참조
+- Crash: 기본 README 참조
+- Hold'em Exchange: `/docs/holdem-exchange.md`
+
+## 테스트
+```bash
+pnpm test        # 테스트 실행
+pnpm test:watch  # 워치 모드
+```

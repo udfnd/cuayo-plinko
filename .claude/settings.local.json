@@ -6,7 +6,10 @@
       "Bash(pnpm install:*)",
       "Bash(curl:*)",
       "Bash(pkill:*)",
-      "Bash(pnpm build:*)"
+      "Bash(pnpm build:*)",
+      "Bash(cat:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm test:*)"
     ]
   }
 }
