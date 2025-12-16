@@ -36,10 +36,10 @@ export interface UseCrashSyncResult {
 const GAME_EPOCH = new Date('2024-01-01T00:00:00Z').getTime();
 
 // Crash 게임 타이밍 - 고정 라운드 시간
-const BETTING_DURATION = 5000;   // 베팅 5초
+const BETTING_DURATION = 10000;  // 베팅 10초
 const RUNNING_DURATION = 15000;  // 러닝 15초 (고정)
-const CRASHED_DURATION = 3000;   // 크래시 후 3초
-const ROUND_DURATION = BETTING_DURATION + RUNNING_DURATION + CRASHED_DURATION; // 23초
+const CRASHED_DURATION = 5000;   // 크래시 후 5초
+const ROUND_DURATION = BETTING_DURATION + RUNNING_DURATION + CRASHED_DURATION; // 30초
 
 // 배수 증가율 - 15초 동안 1.00x에서 최대 약 10x까지
 const MULTIPLIER_GROWTH_RATE = 0.00015; // 초당 약 15%

@@ -4,15 +4,16 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import UserBalance from './UserBalance';
 import { useAuth } from './AuthProvider';
-import { signOut } from '@/lib/auth/actions';
 import styles from './AuthHeader.module.css';
 
 export default function AuthHeader() {
   const router = useRouter();
-  const { profile } = useAuth();
+  const { profile, signOut } = useAuth();
 
   const handleSignOut = async () => {
+    // Context의 signOut 사용 - 즉시 profile을 null로 설정 후 Supabase 로그아웃
     await signOut();
+    router.push('/');
     router.refresh();
   };
 

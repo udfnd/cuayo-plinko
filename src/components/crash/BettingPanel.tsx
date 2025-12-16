@@ -29,7 +29,7 @@ export default function BettingPanel({
   onCancelBet,
   onCashOut,
 }: BettingPanelProps) {
-  const [betAmount, setBetAmount] = useState(1.00);
+  const [betAmount, setBetAmount] = useState(10);
   const [autoCashout, setAutoCashout] = useState<string>('2.00');
   const [useAutoCashout, setUseAutoCashout] = useState(false);
 
@@ -78,12 +78,12 @@ export default function BettingPanel({
               color: '#fff',
               fontSize: '16px',
             }}
-            min={0.01}
-            step={0.01}
+            min={1}
+            step={1}
           />
         </div>
         <div style={{ display: 'flex', gap: '4px', marginTop: '8px' }}>
-          {[0.5, 1, 2, 5].map((preset) => (
+          {[10, 25, 50, 100].map((preset) => (
             <button
               key={preset}
               onClick={() => setBetAmount(preset)}

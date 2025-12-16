@@ -177,17 +177,21 @@ export default function HoldemPage() {
       };
     });
 
-    // 당첨금 지급
-    const totalPayout = settlements.reduce((sum, s) => sum + s.payout, 0);
-    if (totalPayout > 0) {
-      updateBalance(totalPayout);
-    }
+    // 당첨금 지급 (비동기 처리)
+    const processSettlement = async () => {
+      const totalPayout = settlements.reduce((sum, s) => sum + s.payout, 0);
+      if (totalPayout > 0) {
+        await updateBalance(totalPayout);
+      }
 
-    setRoundBets(prev => prev ? {
-      ...prev,
-      settled: true,
-      settlements,
-    } : null);
+      setRoundBets(prev => prev ? {
+        ...prev,
+        settled: true,
+        settlements,
+      } : null);
+    };
+
+    processSettlement();
   }, [gameState.phase, gameState.winnerIndices, roundBets, updateBalance]);
 
   // 베팅 핸들러
@@ -344,7 +348,7 @@ export default function HoldemPage() {
           {/* 베팅 패널 */}
           <BettingPanel
             phase={gameState.phase}
-            balance={gameState.balance}
+            balance={profile?.balance ?? 0}
             selectedHand={selectedHand}
             currentOdds={selectedHand !== null ? gameState.equities?.[selectedHand]?.fairOdds ?? null : null}
             bets={roundBets?.bets || []}

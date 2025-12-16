@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   email TEXT NOT NULL UNIQUE,
   nickname TEXT NOT NULL UNIQUE,
-  balance INTEGER NOT NULL DEFAULT 1000,  -- 초기 잔고 1000원
+  balance NUMERIC(10, 2) NOT NULL DEFAULT 1000.00,  -- 초기 잔고 1000원 (소수점 2자리까지)
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -72,19 +72,39 @@ END;
 $$;
 
 -- 잔고 업데이트 함수 (게임 결과 반영용)
-CREATE OR REPLACE FUNCTION public.update_balance(user_id UUID, amount INTEGER)
-RETURNS INTEGER
+-- 소수점 지원 및 음수 잔고 방지
+CREATE OR REPLACE FUNCTION public.update_balance(user_id UUID, amount NUMERIC)
+RETURNS NUMERIC
 LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 DECLARE
-  new_balance INTEGER;
+  current_balance NUMERIC;
+  new_balance NUMERIC;
 BEGIN
+  -- 현재 잔고 조회
+  SELECT balance INTO current_balance
+  FROM public.profiles
+  WHERE id = user_id;
+
+  -- 사용자가 존재하지 않는 경우
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'User not found';
+  END IF;
+
+  -- 새 잔고 계산
+  new_balance := current_balance + amount;
+
+  -- 음수 잔고 방지
+  IF new_balance < 0 THEN
+    RAISE EXCEPTION 'Insufficient balance. Current: %, Requested: %', current_balance, amount;
+  END IF;
+
+  -- 잔고 업데이트
   UPDATE public.profiles
-  SET balance = balance + amount,
+  SET balance = new_balance,
       updated_at = NOW()
-  WHERE id = user_id
-  RETURNING balance INTO new_balance;
+  WHERE id = user_id;
 
   RETURN new_balance;
 END;

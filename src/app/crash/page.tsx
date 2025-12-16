@@ -46,6 +46,7 @@ export default function CrashPage() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const lastPhaseRef = useRef<CrashPhase | null>(null);
   const lastRoundRef = useRef<number>(0);
+  const cashingOutRef = useRef<boolean>(false); // 캐시아웃 중복 방지
 
   // 사운드 효과
   const playSound = useCallback((type: 'running' | 'crash') => {
@@ -81,14 +82,25 @@ export default function CrashPage() {
     if (syncState.phase !== 'RUNNING') return;
     if (roundBet.cashedOut) return;
 
-    const payout = roundBet.amount * syncState.currentMultiplier;
-    await updateBalance(payout);
+    // 중복 호출 방지 (ref로 즉시 체크)
+    if (cashingOutRef.current) return;
+    cashingOutRef.current = true;
 
-    setRoundBet(prev => prev ? {
-      ...prev,
-      cashedOut: true,
-      cashoutMultiplier: syncState.currentMultiplier,
-    } : null);
+    try {
+      const payout = roundBet.amount * syncState.currentMultiplier;
+      await updateBalance(payout);
+
+      setRoundBet(prev => prev ? {
+        ...prev,
+        cashedOut: true,
+        cashoutMultiplier: syncState.currentMultiplier,
+      } : null);
+    } finally {
+      // 다음 라운드를 위해 리셋 (상태 업데이트 후)
+      setTimeout(() => {
+        cashingOutRef.current = false;
+      }, 100);
+    }
   }, [roundBet, syncState.phase, syncState.currentMultiplier, updateBalance]);
 
   // 페이즈 변경 감지
@@ -114,6 +126,8 @@ export default function CrashPage() {
     if (currentRound !== prevRound && prevRound > 0) {
       // 이전 라운드 정산 처리는 CRASHED 페이즈에서 이미 처리됨
       setRoundBet(null);
+      // 캐시아웃 ref 리셋
+      cashingOutRef.current = false;
     }
 
     lastPhaseRef.current = currentPhase;
