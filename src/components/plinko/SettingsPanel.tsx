@@ -10,6 +10,7 @@ interface SettingsPanelProps {
   onAuto: (count: number) => void;
   isAutoRunning: boolean;
   onStopAuto: () => void;
+  maxBet?: number;
 }
 
 const ROWS_OPTIONS: Rows[] = [8, 12, 16];
@@ -26,13 +27,17 @@ export default function SettingsPanel({
   onAuto,
   isAutoRunning,
   onStopAuto,
+  maxBet,
 }: SettingsPanelProps) {
   const [autoCount, setAutoCount] = useState(10);
 
   const handleBetChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Math.max(0.01, parseFloat(e.target.value) || 0);
+    let value = Math.max(0.01, parseFloat(e.target.value) || 0);
+    if (maxBet !== undefined && value > maxBet) {
+      value = maxBet;
+    }
     onSettingsChange({ ...settings, bet: value });
-  }, [settings, onSettingsChange]);
+  }, [settings, onSettingsChange, maxBet]);
 
   const handleRowsChange = useCallback((rows: Rows) => {
     onSettingsChange({ ...settings, rows });

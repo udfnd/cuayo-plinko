@@ -9,7 +9,14 @@
       "Bash(pnpm build:*)",
       "Bash(cat:*)",
       "Bash(pnpm add:*)",
-      "Bash(pnpm test:*)"
+      "Bash(pnpm test:*)",
+      "Bash(claude mcp add:*)",
+      "Bash(ls:*)",
+      "Bash(node -e:*)"
     ]
-  }
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "supabase"
+  ]
 }

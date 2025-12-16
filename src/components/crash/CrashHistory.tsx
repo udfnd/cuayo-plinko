@@ -1,9 +1,17 @@
 'use client';
 
-import type { RoundResult } from '@/lib/crash/gameState';
+// 서버 동기화 모드용 간소화된 히스토리 타입
+interface SimpleHistoryItem {
+  roundNumber: number;
+  crashPoint: number;
+  betAmount?: number;
+  cashedOut?: boolean;
+  cashoutMultiplier?: number;
+  profit?: number;
+}
 
 interface CrashHistoryProps {
-  history: RoundResult[];
+  history: SimpleHistoryItem[];
   totalProfit: number;
 }
 
@@ -45,7 +53,7 @@ export default function CrashHistory({ history, totalProfit }: CrashHistoryProps
           flexWrap: 'wrap',
           gap: '6px',
         }}>
-          {history.slice().reverse().slice(0, 15).map((result, i) => (
+          {history.slice(0, 15).map((result) => (
             <div
               key={result.roundNumber}
               style={{
@@ -77,7 +85,7 @@ export default function CrashHistory({ history, totalProfit }: CrashHistoryProps
           maxHeight: '200px',
           overflowY: 'auto',
         }}>
-          {history.slice().reverse().filter(r => r.playerBet).map((result) => (
+          {history.filter(r => r.betAmount !== undefined).map((result) => (
             <div
               key={result.roundNumber}
               style={{
@@ -96,18 +104,23 @@ export default function CrashHistory({ history, totalProfit }: CrashHistoryProps
                 </div>
                 <div style={{ color: '#fff', fontSize: '12px' }}>
                   {result.crashPoint.toFixed(2)}x
+                  {result.cashedOut && result.cashoutMultiplier && (
+                    <span style={{ color: '#22c55e', marginLeft: '4px' }}>
+                      @{result.cashoutMultiplier.toFixed(2)}x
+                    </span>
+                  )}
                 </div>
               </div>
               <div style={{
-                color: result.profit >= 0 ? '#22c55e' : '#ef4444',
+                color: (result.profit ?? 0) >= 0 ? '#22c55e' : '#ef4444',
                 fontWeight: 'bold',
                 fontSize: '14px',
               }}>
-                {result.profit >= 0 ? '+' : ''}{result.profit.toFixed(2)}
+                {(result.profit ?? 0) >= 0 ? '+' : ''}{(result.profit ?? 0).toFixed(2)}
               </div>
             </div>
           ))}
-          {history.filter(r => r.playerBet).length === 0 && (
+          {history.filter(r => r.betAmount !== undefined).length === 0 && (
             <div style={{ color: '#666', fontSize: '12px', textAlign: 'center', padding: '16px' }}>
               No bets placed yet
             </div>

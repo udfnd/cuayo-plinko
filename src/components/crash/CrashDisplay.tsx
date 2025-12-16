@@ -1,12 +1,14 @@
 'use client';
 
 import { useRef, useEffect, useState } from 'react';
-import type { GamePhase } from '@/lib/crash/gameState';
+
+// 서버 동기화 모드와 호환되는 페이즈 타입
+type DisplayPhase = 'BETTING' | 'RUNNING' | 'CRASHED' | 'NEXT_ROUND';
 
 interface CrashDisplayProps {
-  phase: GamePhase;
+  phase: DisplayPhase;
   multiplier: number;
-  crashPoint: number;
+  crashPoint: number | null;
   bettingTimeLeft: number;
   multiplierHistory: number[];
 }
@@ -212,7 +214,7 @@ export default function CrashDisplay({
         };
       case 'CRASHED':
         return {
-          main: `${crashPoint.toFixed(2)}x`,
+          main: `${(crashPoint ?? multiplier).toFixed(2)}x`,
           sub: 'CRASHED!',
           color: '#ef4444',
         };

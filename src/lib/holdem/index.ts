@@ -66,6 +66,7 @@ export {
   getVisibleBoard,
   getPhaseDisplayName,
   canBet,
+  createStateFromSeed,
   type GamePhase,
   type Bet,
   type Settlement,

@@ -336,3 +336,75 @@ export function canBet(state: HoldemGameState): boolean {
   // PRE_DEAL betting allowed (blind bet at 25% odds)
   return state.phase !== 'SETTLE';
 }
+
+/**
+ * Create game state from seed and phase index (for server-synced mode)
+ */
+export function createStateFromSeed(
+  seed: string,
+  phaseIndex: number,
+  roundNumber: number
+): HoldemGameState {
+  const dealt = dealHoldemExchange(seed);
+  const phase = PHASE_ORDER[Math.min(phaseIndex, PHASE_ORDER.length - 1)];
+
+  let visibleHoleCards = false;
+  let visibleBoardCount = 0;
+
+  switch (phase) {
+    case 'PRE_FLOP':
+      visibleHoleCards = true;
+      break;
+    case 'FLOP':
+      visibleHoleCards = true;
+      visibleBoardCount = 3;
+      break;
+    case 'TURN':
+      visibleHoleCards = true;
+      visibleBoardCount = 4;
+      break;
+    case 'RIVER':
+    case 'SETTLE':
+      visibleHoleCards = true;
+      visibleBoardCount = 5;
+      break;
+  }
+
+  const state: HoldemGameState = {
+    phase,
+    seed,
+    hands: dealt.hands as [Card[], Card[], Card[], Card[]],
+    board: dealt.board,
+    visibleHoleCards,
+    visibleBoardCount,
+    equities: phase === 'PRE_DEAL' ? createPreDealEquities() : null,
+    isCalculating: phase !== 'PRE_DEAL' && phase !== 'SETTLE',
+    bets: [],
+    balance: 0, // Managed externally
+    evaluatedHands: null,
+    winnerIndices: null,
+    settlements: null,
+    roundNumber,
+    totalProfit: 0,
+  };
+
+  // At SETTLE phase, evaluate final hands
+  if (phase === 'SETTLE') {
+    const evaluatedHands = state.hands.map(hand =>
+      evaluateHand(hand, state.board)
+    );
+    const winnerIndices = determineWinners(evaluatedHands);
+    const finalEquities = calculateEquity(state.hands, state.board, 1);
+
+    return {
+      ...state,
+      evaluatedHands,
+      winnerIndices,
+      equities: finalEquities.equities,
+      isCalculating: false,
+    };
+  }
+
+  return state;
+}
+

@@ -1,11 +1,20 @@
 'use client';
 
 import { useState } from 'react';
-import type { GamePhase, PlayerBet } from '@/lib/crash/gameState';
+
+// 서버 동기화 모드와 호환되는 타입
+type BettingPhase = 'BETTING' | 'RUNNING' | 'CRASHED' | 'NEXT_ROUND';
+
+interface SimpleBet {
+  amount: number;
+  autoCashoutAt: number | null;
+  cashedOut: boolean;
+  cashoutMultiplier: number | null;
+}
 
 interface BettingPanelProps {
-  phase: GamePhase;
-  playerBet: PlayerBet | null;
+  phase: BettingPhase;
+  playerBet: SimpleBet | null;
   currentMultiplier: number;
   onPlaceBet: (amount: number, autoCashoutAt: number | null) => void;
   onCancelBet: () => void;
