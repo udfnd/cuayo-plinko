@@ -22,6 +22,12 @@ export default function CrashDisplay({
 }: CrashDisplayProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [speakiImage, setSpeakiImage] = useState<HTMLImageElement | null>(null);
+  // Hydration 불일치 방지: 마운트 후에만 시간 표시
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // 이미지 로드
   useEffect(() => {
@@ -202,7 +208,8 @@ export default function CrashDisplay({
     switch (phase) {
       case 'BETTING':
         return {
-          main: `${(bettingTimeLeft / 1000).toFixed(1)}s`,
+          // Hydration 불일치 방지: 마운트 전에는 고정 텍스트 표시
+          main: isMounted ? `${(bettingTimeLeft / 1000).toFixed(1)}s` : '---',
           sub: 'Place your bets!',
           color: '#fbbf24',
         };

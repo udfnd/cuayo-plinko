@@ -14,6 +14,8 @@ interface SimpleBet {
 
 interface BettingPanelProps {
   phase: BettingPhase;
+  balance: number;
+  isBalanceLoading?: boolean;
   playerBet: SimpleBet | null;
   currentMultiplier: number;
   onPlaceBet: (amount: number, autoCashoutAt: number | null) => void;
@@ -23,6 +25,8 @@ interface BettingPanelProps {
 
 export default function BettingPanel({
   phase,
+  balance,
+  isBalanceLoading = false,
   playerBet,
   currentMultiplier,
   onPlaceBet,
@@ -35,10 +39,27 @@ export default function BettingPanel({
 
   const handleBet = () => {
     const autoValue = useAutoCashout ? parseFloat(autoCashout) : null;
+
+
     onPlaceBet(betAmount, autoValue);
   };
 
-  const canBet = phase === 'BETTING' && !playerBet;
+
+  // 베팅 가능 조건
+  const isBettingPhase = phase === 'BETTING';
+  const hasNoBet = !playerBet;
+  const hasEnoughBalance = balance >= betAmount;
+  const canBet = isBettingPhase && hasNoBet && hasEnoughBalance && !isBalanceLoading;
+
+  // 버튼 비활성화 이유
+  const getDisabledReason = () => {
+    if (isBalanceLoading) return 'Loading...';
+    if (!isBettingPhase) return null; // BETTING 페이즈가 아니면 버튼 자체가 안 보임
+    if (!hasNoBet) return null; // 이미 베팅했으면 버튼 자체가 안 보임
+    if (!hasEnoughBalance) return 'Insufficient balance';
+    return null;
+  };
+  const disabledReason = getDisabledReason();
   const canCancel = phase === 'BETTING' && playerBet;
   const canCashOut = phase === 'RUNNING' && playerBet && !playerBet.cashedOut;
 
@@ -58,6 +79,20 @@ export default function BettingPanel({
       flexDirection: 'column',
       gap: '16px',
     }}>
+      {/* Balance Display */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        padding: '12px',
+        borderRadius: '8px',
+        background: 'rgba(0, 0, 0, 0.2)',
+      }}>
+        <span style={{ color: '#888' }}>Balance</span>
+        <span style={{ color: '#fff', fontWeight: 'bold', fontSize: '18px' }}>
+          {isBalanceLoading ? '---' : `$${balance.toFixed(2)}`}
+        </span>
+      </div>
+
       {/* Bet Amount */}
       <div>
         <label style={{ color: '#888', fontSize: '12px', marginBottom: '4px', display: 'block' }}>
@@ -142,21 +177,24 @@ export default function BettingPanel({
       </div>
 
       {/* Action Button */}
-      {canBet && (
+      {isBettingPhase && hasNoBet && (
         <button
           onClick={handleBet}
+          disabled={!canBet}
           style={{
             padding: '16px',
             borderRadius: '8px',
             border: 'none',
-            background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+            background: canBet
+              ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)'
+              : '#333',
             color: '#fff',
             fontSize: '18px',
             fontWeight: 'bold',
-            cursor: 'pointer',
+            cursor: canBet ? 'pointer' : 'not-allowed',
           }}
         >
-          Place Bet
+          {disabledReason || 'Place Bet'}
         </button>
       )}
 

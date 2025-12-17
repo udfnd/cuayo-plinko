@@ -4,12 +4,27 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AuthForm from '@/components/auth/AuthForm';
 import FormInput from '@/components/auth/FormInput';
-import { useAuth } from '@/components/auth';
+import { useAuthStore } from '@/lib/stores/authStore';
 import { signUp } from '@/lib/auth/actions';
 
 export default function SignUpPage() {
   const router = useRouter();
-  const { refreshProfile } = useAuth();
+  const refreshProfile = useAuthStore(state => state.refreshProfile);
+
+  const handleSignUpSuccess = async () => {
+    try {
+      // 회원가입 후 프로필 생성 대기 (트리거 지연 고려)
+      await new Promise(resolve => setTimeout(resolve, 500));
+      await refreshProfile();
+
+      // 홈으로 이동
+      router.push('/');
+      router.refresh();
+    } catch (error) {
+      console.error('Signup success handler error:', error);
+      router.push('/');
+    }
+  };
 
   return (
     <AuthForm
@@ -17,11 +32,7 @@ export default function SignUpPage() {
       submitLabel="가입하기"
       onSubmit={signUp}
       successMessage="회원가입이 완료되었습니다! 홈으로 이동합니다."
-      onSuccess={async () => {
-        await refreshProfile();
-        router.push('/');
-        router.refresh();
-      }}
+      onSuccess={handleSignUpSuccess}
       footer={
         <>
           <span>이미 계정이 있으신가요? </span>

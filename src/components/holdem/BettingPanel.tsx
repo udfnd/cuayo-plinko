@@ -6,6 +6,7 @@ import { GamePhase, Bet, Settlement, getPhaseDisplayName } from '@/lib/holdem';
 interface BettingPanelProps {
   phase: GamePhase;
   balance: number;
+  isBalanceLoading?: boolean;
   selectedHand: number | null;
   currentOdds: number | null;
   bets: Bet[];
@@ -19,6 +20,7 @@ const QUICK_STAKES = [10, 25, 50, 100];
 export default function BettingPanel({
   phase,
   balance,
+  isBalanceLoading = false,
   selectedHand,
   currentOdds,
   bets,
@@ -28,9 +30,24 @@ export default function BettingPanel({
 }: BettingPanelProps) {
   const [stake, setStake] = useState(10);
 
-  const canBet = phase !== 'SETTLE' && selectedHand !== null;
+  // 베팅 가능 조건: SETTLE 페이즈가 아니고, 핸드가 선택되어 있어야 함
+  const isHandSelected = selectedHand !== null;
+  const isNotSettlePhase = phase !== 'SETTLE';
+  const hasEnoughBalance = balance >= stake;
+  const canBet = isNotSettlePhase && isHandSelected && hasEnoughBalance && !isBalanceLoading;
+
   const totalStaked = bets.reduce((sum, b) => sum + b.stake, 0);
   const totalProfit = settlements?.reduce((sum, s) => sum + s.profit, 0) ?? 0;
+
+  // 버튼 비활성화 이유 메시지
+  const getDisabledReason = () => {
+    if (isBalanceLoading) return 'Loading...';
+    if (!isNotSettlePhase) return 'Settling...';
+    if (!isHandSelected) return 'Select a hand';
+    if (!hasEnoughBalance) return 'Insufficient balance';
+    return null;
+  };
+  const disabledReason = getDisabledReason();
 
   return (
     <div style={{
@@ -144,8 +161,8 @@ export default function BettingPanel({
 
           {/* Place bet button */}
           <button
-            onClick={() => canBet && onPlaceBet(stake)}
-            disabled={!canBet || stake > balance}
+            onClick={() => onPlaceBet(stake)}
+            disabled={!canBet}
             style={{
               width: '100%',
               padding: 14,
@@ -159,7 +176,7 @@ export default function BettingPanel({
               marginBottom: 8,
             }}
           >
-            Place Bet
+            {disabledReason || 'Place Bet'}
           </button>
 
           {/* Cancel bets button */}

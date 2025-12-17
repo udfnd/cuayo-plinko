@@ -14,11 +14,11 @@ export default function GameBalanceGuard({
   children,
   requiredBalance = 1,
 }: GameBalanceGuardProps) {
-  const { profile, isLoading } = useAuth();
+  const { profile, isLoading, isInitialized } = useAuth();
   const pathname = usePathname();
 
-  // 로딩 중
-  if (isLoading) {
+  // 초기화 전 또는 로딩 중
+  if (!isInitialized || isLoading) {
     return (
       <div className={styles.container}>
         <div className={styles.loading}>로딩 중...</div>

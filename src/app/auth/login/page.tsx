@@ -5,25 +5,36 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import AuthForm from '@/components/auth/AuthForm';
 import FormInput from '@/components/auth/FormInput';
-import { useAuth } from '@/components/auth';
+import { useAuthStore } from '@/lib/stores/authStore';
 import { signIn } from '@/lib/auth/actions';
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { refreshProfile } = useAuth();
+  const refreshProfile = useAuthStore(state => state.refreshProfile);
   const redirectTo = searchParams.get('from') || '/';
+
+  const handleLoginSuccess = async () => {
+    try {
+      // 약간의 지연 후 프로필 새로고침
+      await new Promise(resolve => setTimeout(resolve, 200));
+      await refreshProfile();
+
+      // 리다이렉트
+      router.push(redirectTo);
+      router.refresh();
+    } catch (error) {
+      console.error('Login success handler error:', error);
+      router.push(redirectTo);
+    }
+  };
 
   return (
     <AuthForm
       title="로그인"
       submitLabel="로그인"
       onSubmit={signIn}
-      onSuccess={async () => {
-        await refreshProfile();
-        router.push(redirectTo);
-        router.refresh();
-      }}
+      onSuccess={handleLoginSuccess}
       footer={
         <>
           <div style={{ marginBottom: '0.5rem' }}>

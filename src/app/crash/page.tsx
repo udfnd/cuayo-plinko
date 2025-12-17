@@ -35,18 +35,25 @@ interface HistoryItem {
 export default function CrashPage() {
   const router = useRouter();
   const pathname = usePathname();
-  const { profile, updateBalance } = useAuth();
+  const { profile, updateBalance, isLoading: isAuthLoading, isConfigured } = useAuth();
   const { syncState, isConnected, playerCount } = useCrashSync();
 
   const [roundBet, setRoundBet] = useState<RoundBet | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [totalProfit, setTotalProfit] = useState(0);
   const [multiplierHistory, setMultiplierHistory] = useState<number[]>([1.00]);
+  // Hydration 불일치 방지: 마운트 후에만 동적 값 표시
+  const [isMounted, setIsMounted] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const lastPhaseRef = useRef<CrashPhase | null>(null);
   const lastRoundRef = useRef<number>(0);
   const cashingOutRef = useRef<boolean>(false); // 캐시아웃 중복 방지
+
+  // Hydration 불일치 방지
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // 사운드 효과
   const playSound = useCallback((type: 'running' | 'crash') => {
@@ -215,6 +222,8 @@ export default function CrashPage() {
       return;
     }
 
+
+
     setRoundBet({
       roundNumber: syncState.roundNumber,
       amount,
@@ -291,6 +300,8 @@ export default function CrashPage() {
         }}>
           <BettingPanel
             phase={syncState.phase}
+            balance={profile?.balance ?? 0}
+            isBalanceLoading={isAuthLoading || (!profile && isConfigured)}
             playerBet={playerBet}
             currentMultiplier={syncState.currentMultiplier}
             onPlaceBet={handlePlaceBet}
@@ -319,7 +330,7 @@ export default function CrashPage() {
       </GameBalanceGuard>
 
       <div style={{ marginTop: '20px', textAlign: 'center', color: '#888', fontSize: '12px' }}>
-        Round #{syncState.roundNumber} | Seed: {syncState.roundSeed.slice(0, 20)}...
+        {isMounted ? `Round #${syncState.roundNumber} | Seed: ${syncState.roundSeed.slice(0, 20)}...` : 'Loading...'}
       </div>
 
       <div style={{

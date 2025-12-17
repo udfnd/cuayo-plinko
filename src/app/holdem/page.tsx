@@ -43,14 +43,21 @@ interface RoundBets {
 export default function HoldemPage() {
   const router = useRouter();
   const pathname = usePathname();
-  const { profile, updateBalance, isConfigured } = useAuth();
+  const { profile, updateBalance, isConfigured, isLoading: isAuthLoading } = useAuth();
   const { syncState, isConnected, playerCount } = useServerSync('holdem', HOLDEM_PHASES);
 
   const [selectedHand, setSelectedHand] = useState<number | null>(null);
   const [roundBets, setRoundBets] = useState<RoundBets | null>(null);
   const [lastCalculatedPhase, setLastCalculatedPhase] = useState<string>('');
+  // Hydration 불일치 방지: 마운트 후에만 시간 표시
+  const [isMounted, setIsMounted] = useState(false);
 
   const equityCalculatedRef = useRef<string>('');
+
+  // Hydration 불일치 방지
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // 서버 동기화 상태로부터 게임 상태 생성
   const serverGameState = useMemo(() => {
@@ -216,6 +223,7 @@ export default function HoldemPage() {
     }
 
     const result = await updateBalance(-stake);
+
     if (!result.success) {
       alert('베팅 처리 중 오류가 발생했습니다.');
       return;
@@ -314,11 +322,11 @@ export default function HoldemPage() {
             Round #{gameState.roundNumber} - {gameState.phase}
           </span>
           <span style={{
-            color: timeLeftSeconds <= 3 ? '#ef4444' : '#22c55e',
+            color: isMounted && timeLeftSeconds <= 3 ? '#ef4444' : '#22c55e',
             fontSize: '18px',
             fontWeight: 'bold',
           }}>
-            {timeLeftSeconds}초
+            {isMounted ? `${timeLeftSeconds}초` : '---'}
           </span>
         </div>
         <div style={{
@@ -349,6 +357,7 @@ export default function HoldemPage() {
           <BettingPanel
             phase={gameState.phase}
             balance={profile?.balance ?? 0}
+            isBalanceLoading={isAuthLoading || (!profile && isConfigured)}
             selectedHand={selectedHand}
             currentOdds={selectedHand !== null ? gameState.equities?.[selectedHand]?.fairOdds ?? null : null}
             bets={roundBets?.bets || []}
