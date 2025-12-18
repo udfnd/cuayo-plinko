@@ -296,11 +296,8 @@ export default function HoldemPage() {
           WebkitTextFillColor: 'transparent',
           marginBottom: '8px',
         }}>
-          Hold&apos;em Exchange
+          홀덤 익스체인지
         </h1>
-        <p style={{ color: '#666', fontSize: '14px' }}>
-          Educational demo only - Not a gambling service
-        </p>
         <p style={{ color: isConnected ? '#22c55e' : '#666', fontSize: '12px', marginTop: '4px' }}>
           {isConnected ? `온라인 (${playerCount || 1}명 접속)` : '로컬 모드'}
         </p>
@@ -319,7 +316,7 @@ export default function HoldemPage() {
           marginBottom: '8px',
         }}>
           <span style={{ color: '#888', fontSize: '14px' }}>
-            Round #{gameState.roundNumber} - {gameState.phase}
+            라운드 #{gameState.roundNumber} - {gameState.phase}
           </span>
           <span style={{
             color: isMounted && timeLeftSeconds <= 3 ? '#ef4444' : '#22c55e',
@@ -423,17 +420,9 @@ export default function HoldemPage() {
         lineHeight: '1.6',
       }}>
         <p>
-          <strong>서버 동기화 모드:</strong> 게임은 서버 시간 기준으로 자동 진행됩니다.
-          모든 플레이어가 동일한 게임을 실시간으로 공유합니다.
-        </p>
-        <p style={{ marginTop: '8px' }}>
-          <strong>Dead Heat:</strong> 여러 핸드가 동점이면 당첨금이 균등 분배됩니다.
+          <strong>데드히트:</strong> 여러 핸드가 동점이면 당첨금이 균등 분배됩니다.
         </p>
       </div>
-
-      <footer style={{ marginTop: '30px', textAlign: 'center', color: '#555', fontSize: '12px' }}>
-        <p>Custom implementation - Not copied from any gambling service</p>
-      </footer>
     </main>
   );
 }

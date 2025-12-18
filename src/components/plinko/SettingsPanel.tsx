@@ -15,9 +15,9 @@ interface SettingsPanelProps {
 
 const ROWS_OPTIONS: Rows[] = [8, 12, 16];
 const RISK_OPTIONS: { value: Risk; label: string }[] = [
-  { value: 'low', label: 'Low' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'high', label: 'High' },
+  { value: 'low', label: '낮음' },
+  { value: 'medium', label: '중간' },
+  { value: 'high', label: '높음' },
 ];
 
 export default function SettingsPanel({
@@ -47,15 +47,6 @@ export default function SettingsPanel({
     onSettingsChange({ ...settings, risk });
   }, [settings, onSettingsChange]);
 
-  const handleSeedChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    onSettingsChange({ ...settings, seed: e.target.value });
-  }, [settings, onSettingsChange]);
-
-  const handleRandomSeed = useCallback(() => {
-    const randomSeed = Math.random().toString(36).substring(2, 10);
-    onSettingsChange({ ...settings, seed: randomSeed });
-  }, [settings, onSettingsChange]);
-
   return (
     <div style={{
       backgroundColor: '#1e1e2e',
@@ -66,11 +57,11 @@ export default function SettingsPanel({
       flexDirection: 'column',
       gap: '16px',
     }}>
-      <h2 style={{ color: '#fff', margin: 0, fontSize: '18px' }}>Settings</h2>
+      <h2 style={{ color: '#fff', margin: 0, fontSize: '18px' }}>설정</h2>
 
-      {/* Bet Amount */}
+      {/* 베팅 금액 */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <label style={{ color: '#aaa', fontSize: '12px' }}>Bet Amount</label>
+        <label style={{ color: '#aaa', fontSize: '12px' }}>베팅 금액</label>
         <div style={{ display: 'flex', gap: '8px' }}>
           <input
             type="number"
@@ -120,9 +111,9 @@ export default function SettingsPanel({
         </div>
       </div>
 
-      {/* Rows */}
+      {/* 행 수 */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <label style={{ color: '#aaa', fontSize: '12px' }}>Rows</label>
+        <label style={{ color: '#aaa', fontSize: '12px' }}>행 수</label>
         <div style={{ display: 'flex', gap: '8px' }}>
           {ROWS_OPTIONS.map(rows => (
             <button
@@ -146,9 +137,9 @@ export default function SettingsPanel({
         </div>
       </div>
 
-      {/* Risk */}
+      {/* 위험도 */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <label style={{ color: '#aaa', fontSize: '12px' }}>Risk</label>
+        <label style={{ color: '#aaa', fontSize: '12px' }}>위험도</label>
         <div style={{ display: 'flex', gap: '8px' }}>
           {RISK_OPTIONS.map(({ value, label }) => (
             <button
@@ -172,47 +163,7 @@ export default function SettingsPanel({
         </div>
       </div>
 
-      {/* Seed */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <label style={{ color: '#aaa', fontSize: '12px' }}>Seed (for reproducibility)</label>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <input
-            type="text"
-            value={settings.seed}
-            onChange={handleSeedChange}
-            placeholder="Enter seed..."
-            disabled={isAutoRunning}
-            style={{
-              flex: 1,
-              padding: '10px',
-              backgroundColor: '#2a2a3e',
-              border: '1px solid #3a3a5e',
-              borderRadius: '6px',
-              color: '#fff',
-              fontSize: '14px',
-              fontFamily: 'monospace',
-            }}
-          />
-          <button
-            onClick={handleRandomSeed}
-            disabled={isAutoRunning}
-            style={{
-              padding: '10px 12px',
-              backgroundColor: '#3a3a5e',
-              border: 'none',
-              borderRadius: '6px',
-              color: '#fff',
-              cursor: 'pointer',
-              fontSize: '16px',
-            }}
-            title="Random seed"
-          >
-            🎲
-          </button>
-        </div>
-      </div>
-
-      {/* Drop Button */}
+      {/* 드롭 버튼 */}
       <button
         onClick={onDrop}
         disabled={isAutoRunning}
@@ -228,12 +179,12 @@ export default function SettingsPanel({
           marginTop: '8px',
         }}
       >
-        Drop Ball
+        공 떨어뜨리기
       </button>
 
-      {/* Auto */}
+      {/* 자동 드롭 */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <label style={{ color: '#aaa', fontSize: '12px' }}>Auto Drop</label>
+        <label style={{ color: '#aaa', fontSize: '12px' }}>자동 드롭</label>
         <div style={{ display: 'flex', gap: '8px' }}>
           <input
             type="number"
@@ -266,7 +217,7 @@ export default function SettingsPanel({
                 fontWeight: 'bold',
               }}
             >
-              Stop
+              정지
             </button>
           ) : (
             <button
@@ -282,7 +233,7 @@ export default function SettingsPanel({
                 fontWeight: 'bold',
               }}
             >
-              Auto ({autoCount}×)
+              자동 ({autoCount}회)
             </button>
           )}
         </div>

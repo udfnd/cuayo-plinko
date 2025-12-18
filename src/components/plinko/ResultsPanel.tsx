@@ -40,7 +40,7 @@ export default function ResultsPanel({
         padding: '16px',
         textAlign: 'center',
       }}>
-        <h3 style={{ color: '#888', margin: '0 0 8px 0', fontSize: '12px' }}>LAST RESULT</h3>
+        <h3 style={{ color: '#888', margin: '0 0 8px 0', fontSize: '12px' }}>최근 결과</h3>
         {lastResult ? (
           <>
             <div style={{
@@ -51,11 +51,11 @@ export default function ResultsPanel({
               {lastResult.multiplier.toFixed(2)}×
             </div>
             <div style={{ color: '#aaa', fontSize: '14px', marginTop: '4px' }}>
-              Slot #{lastResult.slotIndex} → ${lastResult.payout.toFixed(2)}
+              슬롯 #{lastResult.slotIndex} → ${lastResult.payout.toFixed(2)}
             </div>
           </>
         ) : (
-          <div style={{ color: '#666', fontSize: '14px' }}>No drops yet</div>
+          <div style={{ color: '#666', fontSize: '14px' }}>아직 드롭 기록이 없습니다</div>
         )}
       </div>
 
@@ -68,7 +68,7 @@ export default function ResultsPanel({
         justifyContent: 'space-between',
         alignItems: 'center',
       }}>
-        <span style={{ color: '#888', fontSize: '12px' }}>TOTAL PROFIT</span>
+        <span style={{ color: '#888', fontSize: '12px' }}>총 수익</span>
         <span style={{
           fontSize: '18px',
           fontWeight: 'bold',
@@ -84,9 +84,9 @@ export default function ResultsPanel({
         borderRadius: '8px',
         padding: '12px',
       }}>
-        <h3 style={{ color: '#888', margin: '0 0 8px 0', fontSize: '12px' }}>EXPECTED VALUE</h3>
+        <h3 style={{ color: '#888', margin: '0 0 8px 0', fontSize: '12px' }}>기대값</h3>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ color: '#aaa', fontSize: '14px' }}>EV per bet:</span>
+          <span style={{ color: '#aaa', fontSize: '14px' }}>베팅당 EV:</span>
           <span style={{
             fontSize: '16px',
             fontWeight: 'bold',
@@ -96,7 +96,7 @@ export default function ResultsPanel({
           </span>
         </div>
         <div style={{ color: '#666', fontSize: '11px', marginTop: '4px' }}>
-          (House edge: {((1 - expectedValue) * 100).toFixed(2)}%)
+          (하우스 엣지: {((1 - expectedValue) * 100).toFixed(2)}%)
         </div>
       </div>
 
@@ -110,7 +110,7 @@ export default function ResultsPanel({
         display: 'flex',
         flexDirection: 'column',
       }}>
-        <h3 style={{ color: '#888', margin: '0 0 8px 0', fontSize: '12px' }}>PROBABILITY DISTRIBUTION</h3>
+        <h3 style={{ color: '#888', margin: '0 0 8px 0', fontSize: '12px' }}>확률 분포</h3>
         <div style={{
           overflow: 'auto',
           flex: 1,
@@ -119,9 +119,9 @@ export default function ResultsPanel({
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ color: '#666' }}>
-                <th style={{ padding: '4px', textAlign: 'left' }}>Slot</th>
-                <th style={{ padding: '4px', textAlign: 'right' }}>Prob</th>
-                <th style={{ padding: '4px', textAlign: 'right' }}>Multi</th>
+                <th style={{ padding: '4px', textAlign: 'left' }}>슬롯</th>
+                <th style={{ padding: '4px', textAlign: 'right' }}>확률</th>
+                <th style={{ padding: '4px', textAlign: 'right' }}>배수</th>
                 <th style={{ padding: '4px', textAlign: 'right' }}>EV</th>
               </tr>
             </thead>
@@ -161,7 +161,7 @@ export default function ResultsPanel({
         flexDirection: 'column',
       }}>
         <h3 style={{ color: '#888', margin: '0 0 8px 0', fontSize: '12px' }}>
-          HISTORY (Last {Math.min(history.length, 20)})
+          기록 (최근 {Math.min(history.length, 20)}개)
         </h3>
         <div style={{
           display: 'flex',
@@ -180,13 +180,13 @@ export default function ResultsPanel({
                 color: result.multiplier >= 1 ? '#22c55e' : '#ef4444',
                 fontFamily: 'monospace',
               }}
-              title={`Slot #${result.slotIndex}, Payout: $${result.payout.toFixed(2)}`}
+              title={`슬롯 #${result.slotIndex}, 수익: $${result.payout.toFixed(2)}`}
             >
               {result.multiplier.toFixed(2)}×
             </div>
           ))}
           {history.length === 0 && (
-            <div style={{ color: '#666', fontSize: '12px' }}>No history yet</div>
+            <div style={{ color: '#666', fontSize: '12px' }}>아직 기록이 없습니다</div>
           )}
         </div>
       </div>

@@ -280,11 +280,8 @@ export default function CrashPage() {
           WebkitTextFillColor: 'transparent',
           marginBottom: '8px',
         }}>
-          Crash
+          크래시
         </h1>
-        <p style={{ color: '#666', fontSize: '14px' }}>
-          Educational demo only - Not a gambling service
-        </p>
         <p style={{ color: isConnected ? '#22c55e' : '#666', fontSize: '12px', marginTop: '4px' }}>
           {isConnected ? `온라인 (${playerCount || 1}명 접속)` : '로컬 모드'}
         </p>
@@ -330,26 +327,8 @@ export default function CrashPage() {
       </GameBalanceGuard>
 
       <div style={{ marginTop: '20px', textAlign: 'center', color: '#888', fontSize: '12px' }}>
-        {isMounted ? `Round #${syncState.roundNumber} | Seed: ${syncState.roundSeed.slice(0, 20)}...` : 'Loading...'}
+        {isMounted ? `라운드 #${syncState.roundNumber}` : '로딩 중...'}
       </div>
-
-      <div style={{
-        marginTop: '20px',
-        maxWidth: '500px',
-        textAlign: 'center',
-        color: '#666',
-        fontSize: '13px',
-        lineHeight: '1.6',
-      }}>
-        <p>
-          <strong>서버 동기화 모드:</strong> 게임은 서버 시간 기준으로 자동 진행됩니다.
-          모든 플레이어가 동일한 라운드를 실시간으로 공유합니다.
-        </p>
-      </div>
-
-      <footer style={{ marginTop: '30px', textAlign: 'center', color: '#555', fontSize: '12px' }}>
-        <p>Custom implementation - Not copied from any gambling service</p>
-      </footer>
     </main>
   );
 }

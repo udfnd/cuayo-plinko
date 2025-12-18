@@ -16,7 +16,7 @@ interface HandDisplayProps {
 }
 
 const HAND_COLORS = ['#667eea', '#f5576c', '#22c55e', '#fbbf24'];
-const HAND_LABELS = ['Hand 1', 'Hand 2', 'Hand 3', 'Hand 4'];
+const HAND_LABELS = ['핸드 1', '핸드 2', '핸드 3', '핸드 4'];
 
 export default function HandDisplay({
   handIndex,
@@ -75,7 +75,7 @@ export default function HandDisplay({
             fontSize: 12,
             fontWeight: 'bold',
           }}>
-            WINNER
+            승리
           </span>
         )}
       </div>
@@ -110,7 +110,7 @@ export default function HandDisplay({
         </div>
       )}
 
-      {/* Equity display */}
+      {/* 지분율 표시 */}
       {equity && (
         <div style={{
           display: 'flex',
@@ -122,13 +122,13 @@ export default function HandDisplay({
             <span style={{ color: '#fff', fontWeight: 'bold' }}>
               {(equity.totalEquity * 100).toFixed(1)}%
             </span>
-            <span style={{ marginLeft: 4, fontSize: 12 }}>equity</span>
+            <span style={{ marginLeft: 4, fontSize: 12 }}>승률</span>
           </div>
           <div>
             <span style={{ color: '#fbbf24', fontWeight: 'bold' }}>
               {equity.fairOdds.toFixed(2)}x
             </span>
-            <span style={{ marginLeft: 4, fontSize: 12 }}>odds</span>
+            <span style={{ marginLeft: 4, fontSize: 12 }}>배당</span>
           </div>
         </div>
       )}

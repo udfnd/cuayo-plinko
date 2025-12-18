@@ -168,14 +168,8 @@ export default function PlinkoPage() {
           WebkitTextFillColor: 'transparent',
           marginBottom: '8px',
         }}>
-          Plinko
+          플링코
         </h1>
-        <p style={{
-          color: '#666',
-          fontSize: '14px',
-        }}>
-          Educational demo only - Not a gambling service
-        </p>
       </header>
 
       <GameBalanceGuard requiredBalance={settings.bet}>
@@ -214,17 +208,6 @@ export default function PlinkoPage() {
         </div>
       </GameBalanceGuard>
 
-      <footer style={{
-        marginTop: '30px',
-        textAlign: 'center',
-        color: '#555',
-        fontSize: '12px',
-      }}>
-        <p>Seed: <code style={{ color: '#888', fontFamily: 'monospace' }}>{settings.seed}</code></p>
-        <p style={{ marginTop: '4px' }}>
-          Drop #{dropCountRef.current} | Rows: {settings.rows} | Risk: {settings.risk}
-        </p>
-      </footer>
     </main>
   );
 }

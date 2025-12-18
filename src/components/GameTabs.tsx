@@ -7,9 +7,9 @@ interface GameTabsProps {
 }
 
 const GAMES = [
-  { id: 'plinko', label: 'Plinko', href: '/plinko', gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
-  { id: 'crash', label: 'Crash', href: '/crash', gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
-  { id: 'holdem', label: 'Hold\'em', href: '/holdem', gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' },
+  { id: 'plinko', label: '플링코', href: '/plinko', gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
+  { id: 'crash', label: '크래시', href: '/crash', gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
+  { id: 'holdem', label: '홀덤', href: '/holdem', gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' },
 ] as const;
 
 export default function GameTabs({ currentGame }: GameTabsProps) {

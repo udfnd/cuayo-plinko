@@ -41,10 +41,10 @@ export default function BettingPanel({
 
   // 버튼 비활성화 이유 메시지
   const getDisabledReason = () => {
-    if (isBalanceLoading) return 'Loading...';
-    if (!isNotSettlePhase) return 'Settling...';
-    if (!isHandSelected) return 'Select a hand';
-    if (!hasEnoughBalance) return 'Insufficient balance';
+    if (isBalanceLoading) return '로딩 중...';
+    if (!isNotSettlePhase) return '정산 중...';
+    if (!isHandSelected) return '핸드를 선택하세요';
+    if (!hasEnoughBalance) return '잔고 부족';
     return null;
   };
   const disabledReason = getDisabledReason();
@@ -71,7 +71,7 @@ export default function BettingPanel({
         {getPhaseDisplayName(phase)}
       </div>
 
-      {/* Balance */}
+      {/* 잔고 */}
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -80,7 +80,7 @@ export default function BettingPanel({
         borderRadius: 8,
         background: 'rgba(0, 0, 0, 0.2)',
       }}>
-        <span style={{ color: '#888' }}>Balance</span>
+        <span style={{ color: '#888' }}>잔고</span>
         <span style={{ color: '#fff', fontWeight: 'bold', fontSize: 18 }}>
           ${balance.toFixed(2)}
         </span>
@@ -89,7 +89,7 @@ export default function BettingPanel({
       {/* Betting section (not in SETTLE) */}
       {phase !== 'SETTLE' && (
         <>
-          {/* Selected hand info */}
+          {/* 선택된 핸드 정보 */}
           <div style={{
             marginBottom: 12,
             padding: 12,
@@ -99,23 +99,23 @@ export default function BettingPanel({
             {selectedHand !== null ? (
               <div>
                 <div style={{ color: '#888', fontSize: 12, marginBottom: 4 }}>
-                  Selected: Hand {selectedHand + 1}
+                  선택됨: 핸드 {selectedHand + 1}
                 </div>
                 <div style={{ color: '#fbbf24', fontWeight: 'bold' }}>
-                  Odds: {currentOdds?.toFixed(2) ?? '-'}
+                  배당: {currentOdds?.toFixed(2) ?? '-'}
                 </div>
               </div>
             ) : (
               <div style={{ color: '#666', fontSize: 14, textAlign: 'center' }}>
-                Click a hand to bet
+                핸드를 클릭하여 베팅하세요
               </div>
             )}
           </div>
 
-          {/* Stake input */}
+          {/* 베팅금 입력 */}
           <div style={{ marginBottom: 12 }}>
             <label style={{ display: 'block', color: '#888', fontSize: 12, marginBottom: 4 }}>
-              Stake
+              베팅금
             </label>
             <input
               type="number"
@@ -159,7 +159,7 @@ export default function BettingPanel({
             ))}
           </div>
 
-          {/* Place bet button */}
+          {/* 베팅 버튼 */}
           <button
             onClick={() => onPlaceBet(stake)}
             disabled={!canBet}
@@ -176,35 +176,16 @@ export default function BettingPanel({
               marginBottom: 8,
             }}
           >
-            {disabledReason || 'Place Bet'}
+            {disabledReason || '베팅하기'}
           </button>
-
-          {/* Cancel bets button */}
-          {bets.length > 0 && (
-            <button
-              onClick={onCancelBets}
-              style={{
-                width: '100%',
-                padding: 10,
-                borderRadius: 8,
-                border: '1px solid #ef4444',
-                background: 'transparent',
-                color: '#ef4444',
-                fontSize: 14,
-                cursor: 'pointer',
-              }}
-            >
-              Cancel All Bets (${totalStaked.toFixed(2)})
-            </button>
-          )}
         </>
       )}
 
-      {/* Current bets list */}
+      {/* 현재 베팅 목록 */}
       {bets.length > 0 && (
         <div style={{ marginTop: 16 }}>
           <div style={{ color: '#888', fontSize: 12, marginBottom: 8 }}>
-            Active Bets
+            활성 베팅
           </div>
           {bets.map((bet, i) => (
             <div key={i} style={{
@@ -217,7 +198,7 @@ export default function BettingPanel({
               fontSize: 12,
             }}>
               <span style={{ color: '#888' }}>
-                Hand {bet.handIndex + 1} @ {bet.odds.toFixed(2)}
+                핸드 {bet.handIndex + 1} @ {bet.odds.toFixed(2)}
               </span>
               <span style={{ color: '#fff' }}>
                 ${bet.stake.toFixed(2)}
@@ -227,11 +208,11 @@ export default function BettingPanel({
         </div>
       )}
 
-      {/* Settlement results */}
+      {/* 정산 결과 */}
       {settlements && settlements.length > 0 && (
         <div style={{ marginTop: 16 }}>
           <div style={{ color: '#888', fontSize: 12, marginBottom: 8 }}>
-            Settlement
+            정산
           </div>
           {settlements.map((s, i) => (
             <div key={i} style={{
@@ -244,8 +225,8 @@ export default function BettingPanel({
               fontSize: 12,
             }}>
               <span style={{ color: '#888' }}>
-                Hand {s.bet.handIndex + 1}
-                {s.isDeadHeat && ' (Dead Heat)'}
+                핸드 {s.bet.handIndex + 1}
+                {s.isDeadHeat && ' (데드히트)'}
               </span>
               <span style={{ color: s.won ? '#22c55e' : '#ef4444', fontWeight: 'bold' }}>
                 {s.profit >= 0 ? '+' : ''}{s.profit.toFixed(2)}
@@ -259,7 +240,7 @@ export default function BettingPanel({
             marginTop: 8,
             borderTop: '1px solid #333',
           }}>
-            <span style={{ color: '#888' }}>Total P/L</span>
+            <span style={{ color: '#888' }}>총 손익</span>
             <span style={{
               color: totalProfit >= 0 ? '#22c55e' : '#ef4444',
               fontWeight: 'bold',

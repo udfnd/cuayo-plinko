@@ -319,12 +319,12 @@ export function getVisibleBoard(state: HoldemGameState): Card[] {
  */
 export function getPhaseDisplayName(phase: GamePhase): string {
   const names: Record<GamePhase, string> = {
-    'PRE_DEAL': 'Pre-Deal',
-    'PRE_FLOP': 'Pre-Flop',
-    'FLOP': 'Flop',
-    'TURN': 'Turn',
-    'RIVER': 'River',
-    'SETTLE': 'Settlement',
+    'PRE_DEAL': '프리딜',
+    'PRE_FLOP': '프리플롭',
+    'FLOP': '플롭',
+    'TURN': '턴',
+    'RIVER': '리버',
+    'SETTLE': '정산',
   };
   return names[phase];
 }

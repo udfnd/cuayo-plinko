@@ -24,14 +24,8 @@ export default function Home() {
           WebkitTextFillColor: 'transparent',
           marginBottom: '12px',
         }}>
-          Cuayo Demo
+          Cuayo
         </h1>
-        <p style={{
-          color: '#888',
-          fontSize: '16px',
-        }}>
-          Educational demo only - Not a gambling service
-        </p>
       </header>
 
       <div style={{
@@ -64,14 +58,14 @@ export default function Home() {
               color: '#667eea',
               marginBottom: '8px',
             }}>
-              Plinko
+              플링코
             </h2>
             <p style={{
               color: '#888',
               fontSize: '14px',
               lineHeight: '1.5',
             }}>
-              Drop balls through pegs and watch them bounce into multiplier slots
+              공을 떨어뜨려 배수 슬롯에 넣으세요
             </p>
           </div>
         </Link>
@@ -100,14 +94,14 @@ export default function Home() {
               color: '#f5576c',
               marginBottom: '8px',
             }}>
-              Crash
+              크래시
             </h2>
             <p style={{
               color: '#888',
               fontSize: '14px',
               lineHeight: '1.5',
             }}>
-              Cash out before the multiplier crashes for big wins
+              배수가 터지기 전에 캐시아웃하세요
             </p>
           </div>
         </Link>
@@ -136,27 +130,18 @@ export default function Home() {
               color: '#10b981',
               marginBottom: '8px',
             }}>
-              Hold&apos;em Exchange
+              홀덤 익스체인지
             </h2>
             <p style={{
               color: '#888',
               fontSize: '14px',
               lineHeight: '1.5',
             }}>
-              Bet on 4 hands competing on the same board
+              4개의 핸드 중 승리할 핸드에 베팅하세요
             </p>
           </div>
         </Link>
       </div>
-
-      <footer style={{
-        marginTop: '60px',
-        textAlign: 'center',
-        color: '#555',
-        fontSize: '12px',
-      }}>
-        <p>Custom implementation - Not copied from any gambling service</p>
-      </footer>
     </main>
   );
 }

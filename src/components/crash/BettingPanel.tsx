@@ -53,10 +53,10 @@ export default function BettingPanel({
 
   // 버튼 비활성화 이유
   const getDisabledReason = () => {
-    if (isBalanceLoading) return 'Loading...';
+    if (isBalanceLoading) return '로딩 중...';
     if (!isBettingPhase) return null; // BETTING 페이즈가 아니면 버튼 자체가 안 보임
     if (!hasNoBet) return null; // 이미 베팅했으면 버튼 자체가 안 보임
-    if (!hasEnoughBalance) return 'Insufficient balance';
+    if (!hasEnoughBalance) return '잔고 부족';
     return null;
   };
   const disabledReason = getDisabledReason();
@@ -79,7 +79,7 @@ export default function BettingPanel({
       flexDirection: 'column',
       gap: '16px',
     }}>
-      {/* Balance Display */}
+      {/* 잔고 표시 */}
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -87,16 +87,16 @@ export default function BettingPanel({
         borderRadius: '8px',
         background: 'rgba(0, 0, 0, 0.2)',
       }}>
-        <span style={{ color: '#888' }}>Balance</span>
+        <span style={{ color: '#888' }}>잔고</span>
         <span style={{ color: '#fff', fontWeight: 'bold', fontSize: '18px' }}>
           {isBalanceLoading ? '---' : `$${balance.toFixed(2)}`}
         </span>
       </div>
 
-      {/* Bet Amount */}
+      {/* 베팅 금액 */}
       <div>
         <label style={{ color: '#888', fontSize: '12px', marginBottom: '4px', display: 'block' }}>
-          Bet Amount
+          베팅 금액
         </label>
         <div style={{ display: 'flex', gap: '8px' }}>
           <input
@@ -140,7 +140,7 @@ export default function BettingPanel({
         </div>
       </div>
 
-      {/* Auto Cashout */}
+      {/* 자동 캐시아웃 */}
       <div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
           <input
@@ -151,7 +151,7 @@ export default function BettingPanel({
             style={{ cursor: 'pointer' }}
           />
           <label style={{ color: '#888', fontSize: '12px' }}>
-            Auto Cashout
+            자동 캐시아웃
           </label>
         </div>
         {useAutoCashout && (
@@ -176,7 +176,7 @@ export default function BettingPanel({
         )}
       </div>
 
-      {/* Action Button */}
+      {/* 액션 버튼 */}
       {isBettingPhase && hasNoBet && (
         <button
           onClick={handleBet}
@@ -194,7 +194,7 @@ export default function BettingPanel({
             cursor: canBet ? 'pointer' : 'not-allowed',
           }}
         >
-          {disabledReason || 'Place Bet'}
+          {disabledReason || '베팅하기'}
         </button>
       )}
 
@@ -212,7 +212,7 @@ export default function BettingPanel({
             cursor: 'pointer',
           }}
         >
-          Cancel Bet
+          베팅 취소
         </button>
       )}
 
@@ -230,7 +230,7 @@ export default function BettingPanel({
             cursor: 'pointer',
           }}
         >
-          Cash Out @ {currentMultiplier.toFixed(2)}x
+          캐시아웃 @ {currentMultiplier.toFixed(2)}x
         </button>
       )}
 
@@ -244,7 +244,7 @@ export default function BettingPanel({
           color: '#22c55e',
           fontWeight: 'bold',
         }}>
-          Cashed out @ {playerBet.cashoutMultiplier?.toFixed(2)}x
+          {playerBet.cashoutMultiplier?.toFixed(2)}x에서 캐시아웃 완료
         </div>
       )}
 
@@ -259,19 +259,19 @@ export default function BettingPanel({
           fontWeight: 'bold',
         }}>
           {playerBet.cashedOut
-            ? `Won: ${(playerBet.amount * (playerBet.cashoutMultiplier || 1)).toFixed(2)}`
-            : `Lost: ${playerBet.amount.toFixed(2)}`}
+            ? `획득: ${(playerBet.amount * (playerBet.cashoutMultiplier || 1)).toFixed(2)}`
+            : `손실: ${playerBet.amount.toFixed(2)}`}
         </div>
       )}
 
-      {/* Potential Payout */}
+      {/* 예상 수익 */}
       {(phase === 'RUNNING' && playerBet && !playerBet.cashedOut) && (
         <div style={{
           textAlign: 'center',
           color: '#888',
           fontSize: '14px',
         }}>
-          Potential: <span style={{ color: '#22c55e', fontWeight: 'bold' }}>
+          예상 수익: <span style={{ color: '#22c55e', fontWeight: 'bold' }}>
             {potentialPayout.toFixed(2)}
           </span>
         </div>

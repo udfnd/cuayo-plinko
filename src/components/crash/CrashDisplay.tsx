@@ -209,26 +209,26 @@ export default function CrashDisplay({
       case 'BETTING':
         return {
           // Hydration 불일치 방지: 마운트 전에는 고정 텍스트 표시
-          main: isMounted ? `${(bettingTimeLeft / 1000).toFixed(1)}s` : '---',
-          sub: 'Place your bets!',
+          main: isMounted ? `${(bettingTimeLeft / 1000).toFixed(1)}초` : '---',
+          sub: '베팅하세요!',
           color: '#fbbf24',
         };
       case 'RUNNING':
         return {
           main: `${multiplier.toFixed(2)}x`,
-          sub: 'RUNNING',
+          sub: '진행 중',
           color: multiplier < 2 ? '#22c55e' : multiplier < 5 ? '#fbbf24' : '#ef4444',
         };
       case 'CRASHED':
         return {
           main: `${(crashPoint ?? multiplier).toFixed(2)}x`,
-          sub: 'CRASHED!',
+          sub: '터짐!',
           color: '#ef4444',
         };
       case 'NEXT_ROUND':
         return {
-          main: 'Next Round',
-          sub: 'Preparing...',
+          main: '다음 라운드',
+          sub: '준비 중...',
           color: '#888',
         };
       default:

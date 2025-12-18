@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { GamePhase, PHASE_ORDER, getPhaseDisplayName } from '@/lib/holdem';
 
 interface GameControlsProps {
@@ -18,15 +17,10 @@ export default function GameControls({
   phase,
   isCalculating,
   roundNumber,
-  seed,
   onAdvance,
   onNewRound,
   autoMode = false,
-  timeLeft = 0,
 }: GameControlsProps) {
-  const [demoSeed, setDemoSeed] = useState('');
-  const [showSeedInput, setShowSeedInput] = useState(false);
-
   const phaseIndex = PHASE_ORDER.indexOf(phase);
   const isLastPhase = phase === 'SETTLE';
   const nextPhase = !isLastPhase ? PHASE_ORDER[phaseIndex + 1] : null;
@@ -42,17 +36,14 @@ export default function GameControls({
       border: '1px solid rgba(255, 255, 255, 0.1)',
       minWidth: 200,
     }}>
-      {/* Round info */}
+      {/* 라운드 정보 */}
       <div style={{
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         alignItems: 'center',
       }}>
         <span style={{ color: '#888', fontSize: 14 }}>
-          Round #{roundNumber}
-        </span>
-        <span style={{ color: '#666', fontSize: 12, fontFamily: 'monospace' }}>
-          Seed: {seed.slice(0, 8)}...
+          라운드 #{roundNumber}
         </span>
       </div>
 
@@ -104,7 +95,7 @@ export default function GameControls({
         </div>
       )}
 
-      {/* Manual mode buttons */}
+      {/* 수동 모드 버튼 */}
       {!autoMode && (
         <>
           {!isLastPhase ? (
@@ -126,9 +117,9 @@ export default function GameControls({
               }}
             >
               {isCalculating ? (
-                <>Calculating Odds...</>
+                <>배당 계산 중...</>
               ) : (
-                <>Deal {nextPhase && getPhaseDisplayName(nextPhase)} →</>
+                <>{nextPhase && getPhaseDisplayName(nextPhase)} 딜 →</>
               )}
             </button>
           ) : (
@@ -147,80 +138,14 @@ export default function GameControls({
                   cursor: 'pointer',
                 }}
               >
-                New Round
+                새 라운드
               </button>
-            </div>
-          )}
-
-          {/* Demo seed input toggle */}
-          <button
-            onClick={() => setShowSeedInput(!showSeedInput)}
-            style={{
-              padding: '8px 16px',
-              borderRadius: 6,
-              border: '1px solid #444',
-              background: 'transparent',
-              color: '#888',
-              fontSize: 12,
-              cursor: 'pointer',
-            }}
-          >
-            {showSeedInput ? 'Hide Demo Controls' : 'Demo Mode'}
-          </button>
-
-          {/* Demo seed input */}
-          {showSeedInput && (
-            <div style={{
-              padding: 12,
-              borderRadius: 8,
-              background: 'rgba(0, 0, 0, 0.2)',
-            }}>
-              <label style={{ display: 'block', color: '#888', fontSize: 12, marginBottom: 4 }}>
-                Custom Seed (for reproducible demos)
-              </label>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <input
-                  type="text"
-                  value={demoSeed}
-                  onChange={e => setDemoSeed(e.target.value)}
-                  placeholder="Enter seed..."
-                  style={{
-                    flex: 1,
-                    padding: 8,
-                    borderRadius: 6,
-                    border: '1px solid #444',
-                    background: '#1a1a2e',
-                    color: '#fff',
-                    fontSize: 14,
-                  }}
-                />
-                <button
-                  onClick={() => {
-                    onNewRound(demoSeed || undefined);
-                    setDemoSeed('');
-                  }}
-                  style={{
-                    padding: '8px 16px',
-                    borderRadius: 6,
-                    border: 'none',
-                    background: '#667eea',
-                    color: '#fff',
-                    fontSize: 14,
-                    cursor: 'pointer',
-                  }}
-                >
-                  Start
-                </button>
-              </div>
-              <div style={{ marginTop: 8, color: '#666', fontSize: 11 }}>
-                Use same seed to replay exact same cards
-              </div>
             </div>
           )}
         </>
       )}
 
-      {/* Info */}
+      {/* 팁 */}
       <div style={{
         marginTop: 8,
         padding: 12,
@@ -230,17 +155,8 @@ export default function GameControls({
         color: '#666',
         lineHeight: 1.5,
       }}>
-        {autoMode ? (
-          <>
-            <strong>팁:</strong> 각 단계마다 10초의 시간이 있습니다.
-            핸드를 선택하고 현재 odds로 베팅하세요.
-          </>
-        ) : (
-          <>
-            <strong>Tip:</strong> Bet on a hand at any phase.
-            Earlier bets lock in higher odds.
-          </>
-        )}
+        <strong>팁:</strong> 어느 단계에서나 핸드에 베팅할 수 있습니다.
+        초반 베팅이 더 높은 배당을 받습니다.
       </div>
     </div>
   );

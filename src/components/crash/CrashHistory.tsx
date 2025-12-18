@@ -32,7 +32,7 @@ export default function CrashHistory({ history, totalProfit }: CrashHistoryProps
         textAlign: 'center',
       }}>
         <div style={{ color: '#888', fontSize: '12px', marginBottom: '4px' }}>
-          Total Profit
+          총 수익
         </div>
         <div style={{
           fontSize: '24px',
@@ -46,7 +46,7 @@ export default function CrashHistory({ history, totalProfit }: CrashHistoryProps
       {/* 최근 크래시 배수들 */}
       <div style={{ marginBottom: '16px' }}>
         <div style={{ color: '#888', fontSize: '12px', marginBottom: '8px' }}>
-          Recent Crashes
+          최근 크래시
         </div>
         <div style={{
           display: 'flex',
@@ -70,7 +70,7 @@ export default function CrashHistory({ history, totalProfit }: CrashHistoryProps
           ))}
           {history.length === 0 && (
             <div style={{ color: '#666', fontSize: '12px' }}>
-              No history yet
+              아직 기록이 없습니다
             </div>
           )}
         </div>
@@ -79,7 +79,7 @@ export default function CrashHistory({ history, totalProfit }: CrashHistoryProps
       {/* 상세 히스토리 */}
       <div>
         <div style={{ color: '#888', fontSize: '12px', marginBottom: '8px' }}>
-          Your Results
+          내 결과
         </div>
         <div style={{
           maxHeight: '200px',
@@ -100,7 +100,7 @@ export default function CrashHistory({ history, totalProfit }: CrashHistoryProps
             >
               <div>
                 <div style={{ color: '#888', fontSize: '10px' }}>
-                  Round #{result.roundNumber}
+                  라운드 #{result.roundNumber}
                 </div>
                 <div style={{ color: '#fff', fontSize: '12px' }}>
                   {result.crashPoint.toFixed(2)}x
@@ -122,7 +122,7 @@ export default function CrashHistory({ history, totalProfit }: CrashHistoryProps
           ))}
           {history.filter(r => r.betAmount !== undefined).length === 0 && (
             <div style={{ color: '#666', fontSize: '12px', textAlign: 'center', padding: '16px' }}>
-              No bets placed yet
+              아직 베팅 기록이 없습니다
             </div>
           )}
         </div>
