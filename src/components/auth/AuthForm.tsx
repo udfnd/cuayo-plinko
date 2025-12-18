@@ -6,6 +6,7 @@ import styles from './AuthForm.module.css';
 interface AuthFormProps {
   title: string;
   submitLabel: string;
+  loadingLabel?: string;
   onSubmit: (formData: FormData) => Promise<{ success: boolean; error?: string }>;
   children: React.ReactNode;
   footer?: React.ReactNode;
@@ -16,6 +17,7 @@ interface AuthFormProps {
 export default function AuthForm({
   title,
   submitLabel,
+  loadingLabel,
   onSubmit,
   children,
   footer,
@@ -68,7 +70,7 @@ export default function AuthForm({
             {isLoading ? (
               <span className={styles.buttonContent}>
                 <span className={styles.spinner} />
-                처리 중...
+                {loadingLabel || '처리 중...'}
               </span>
             ) : (
               submitLabel

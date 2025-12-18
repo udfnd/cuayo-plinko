@@ -30,6 +30,7 @@ export default function SignUpPage() {
     <AuthForm
       title="회원가입"
       submitLabel="가입하기"
+      loadingLabel="가입 중..."
       onSubmit={signUp}
       successMessage="회원가입이 완료되었습니다! 홈으로 이동합니다."
       onSuccess={handleSignUpSuccess}

@@ -33,6 +33,7 @@ function LoginForm() {
     <AuthForm
       title="로그인"
       submitLabel="로그인"
+      loadingLabel="로그인 중..."
       onSubmit={signIn}
       onSuccess={handleLoginSuccess}
       footer={
